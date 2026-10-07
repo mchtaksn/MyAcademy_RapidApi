@@ -1,0 +1,680 @@
+﻿@{
+    ViewData["Title"] = "Sıradaki konaklamanı keşfet";
+    ViewData["ActiveNav"] = "home";
+}
+
+@section Styles {
+/* ---------- Hero ---------- */
+.hero {
+    position: relative;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 4.5rem 0 11rem;
+    overflow: hidden;
+}
+
+.hero-route {
+    position: absolute;
+    inset: 0;
+    opacity: .5;
+    pointer-events: none;
+}
+
+.hero-inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.05fr .95fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+.hero-copy .kicker { color: var(--brass); }
+
+.hero-title {
+    font-size: clamp(2.7rem, 4.6vw, 4.1rem);
+    color: var(--paper);
+    max-width: 13ch;
+}
+
+.hero-title em { font-style: italic; color: var(--brass); }
+
+.hero-text {
+    font-size: 1.1rem;
+    color: rgba(251, 249, 245, .72);
+    max-width: 38ch;
+    margin: 1.4rem 0 2.1rem;
+}
+
+.hero-stats {
+    display: flex;
+    gap: 2.2rem;
+    flex-wrap: wrap;
+}
+
+.hero-stat strong {
+    display: block;
+    font-family: var(--serif);
+    font-size: 2rem;
+    color: var(--paper);
+}
+
+.hero-stat span {
+    font-size: .8rem;
+    color: rgba(251, 249, 245, .55);
+}
+
+/* Hero giriş animasyonu: tek, kasıtlı bir sahneleme */
+.hero-copy .kicker,
+.hero-title .line,
+.hero-text,
+.hero-stats {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: heroUp .8s var(--ease) forwards;
+}
+
+.hero-copy .kicker { animation-delay: .05s; }
+.hero-title .line:nth-child(1) { animation-delay: .18s; }
+.hero-title .line:nth-child(2) { animation-delay: .3s; }
+.hero-text { animation-delay: .46s; }
+.hero-stats { animation-delay: .58s; }
+
+@@keyframes heroUp {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Boarding pass arama kartı ---------- */
+.pass-wrap {
+    opacity: 0;
+    transform: translateY(24px) rotate(-3deg);
+    animation: passIn .9s .35s var(--ease) forwards;
+}
+
+@@keyframes passIn {
+    to { opacity: 1; transform: translateY(0) rotate(-1.1deg); }
+}
+
+.boarding-pass {
+    position: relative;
+    background: var(--paper);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 2rem 2rem 1.6rem;
+    transition: transform .5s var(--ease);
+}
+
+.boarding-pass:hover { transform: rotate(0deg) translateY(-2px); }
+
+.pass-row-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1.4rem;
+}
+
+.pass-label {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    color: var(--text-faint);
+}
+
+.pass-route {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--brass-dark);
+}
+
+.search-field {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    padding: .25rem 0;
+}
+
+.search-field .field-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--paper-dim);
+    color: var(--brass-dark);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1rem;
+}
+
+.field-body { display: flex; flex-direction: column; width: 100%; min-width: 0; }
+
+.field-label {
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--text-faint);
+    letter-spacing: .01em;
+    margin-bottom: .1rem;
+}
+
+.field-input {
+    border: 0;
+    background: transparent;
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    color: var(--ink);
+    padding: 0;
+    width: 100%;
+}
+
+.field-input:focus { outline: none; }
+
+.field-select { appearance: none; cursor: pointer; }
+
+.pass-perf {
+    position: relative;
+    height: 1px;
+    margin: 1.3rem -2rem 1.3rem;
+    background-image: repeating-linear-gradient(to right, var(--paper-line) 0 8px, transparent 8px 16px);
+}
+
+.pass-perf::before, .pass-perf::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--ink);
+    transform: translateY(-50%);
+}
+
+.pass-perf::before { left: -13px; }
+.pass-perf::after { right: -13px; }
+
+.guest-row { display: flex; gap: 1.4rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+
+.counter-field { display: flex; flex-direction: column; gap: .4rem; }
+
+.counter-label {
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--text-faint);
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+}
+
+.counter {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    border: 1.5px solid var(--paper-line);
+    border-radius: 999px;
+    padding: .25rem .4rem;
+}
+
+.counter-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 0;
+    background: var(--paper-dim);
+    color: var(--ink);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color .2s var(--ease), transform .15s var(--ease);
+}
+
+.counter-btn:hover { background: var(--brass-soft); color: var(--brass-dark); }
+.counter-btn:active { transform: scale(.9); }
+
+.counter-value {
+    width: 20px;
+    text-align: center;
+    border: 0;
+    background: transparent;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+#childAgeWrapper { display: flex; flex-direction: column; gap: .4rem; }
+
+.age-select {
+    border: 1.5px solid var(--paper-line);
+    border-radius: 999px;
+    padding: .4rem .9rem;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.pass-submit {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.pass-barcode {
+    flex: 1;
+    height: 34px;
+    background-image: repeating-linear-gradient(to right, var(--ink) 0 2px, transparent 2px 5px, var(--ink) 5px 6px, transparent 6px 11px, var(--ink) 11px 14px, transparent 14px 17px);
+    opacity: .14;
+    border-radius: 4px;
+}
+
+.btn-search {
+    white-space: nowrap;
+}
+
+/* ---------- Destinasyon damgaları ---------- */
+.section { padding: 5.5rem 0; }
+.section-muted { background: var(--paper-dim); }
+
+.section-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 2.6rem;
+    flex-wrap: wrap;
+}
+
+.section-title { font-size: clamp(1.8rem, 3vw, 2.4rem); }
+.section-text { color: var(--text-soft); margin-top: .5rem; max-width: 48ch; }
+
+.section-link {
+    font-weight: 700;
+    font-size: .92rem;
+    color: var(--brass-dark);
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    flex-shrink: 0;
+}
+
+.stamp-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.6rem;
+}
+
+.stamp-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+    transition: transform .4s var(--ease);
+}
+
+.stamp-card:nth-child(odd) { transform: rotate(-2deg); }
+.stamp-card:nth-child(even) { transform: rotate(2deg); }
+.stamp-card:hover { transform: rotate(0deg) translateY(-6px); }
+
+.stamp-photo {
+    position: relative;
+    width: 168px;
+    height: 168px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px dashed var(--brass);
+    padding: 7px;
+}
+
+.stamp-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    transition: transform .6s var(--ease);
+}
+
+.stamp-card:hover .stamp-photo img { transform: scale(1.08); }
+
+.stamp-count {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: .68rem;
+    font-weight: 700;
+    padding: .25rem .6rem;
+    border-radius: 999px;
+    border: 2px solid var(--paper);
+}
+
+.stamp-card h3 { font-size: 1.3rem; }
+.stamp-card span { font-size: .85rem; color: var(--text-soft); }
+
+/* ---------- Konaklama türleri ---------- */
+.type-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; }
+
+.type-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .9rem;
+    text-align: center;
+    background: var(--paper);
+    border: 1.5px solid var(--paper-line);
+    border-radius: var(--radius-lg);
+    padding: 2.2rem 1rem;
+    transition: border-color .3s var(--ease), transform .3s var(--ease), box-shadow .3s var(--ease);
+}
+
+.type-card:hover {
+    border-color: transparent;
+    transform: translateY(-5px);
+    box-shadow: var(--shadow);
+}
+
+.type-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--brass-soft);
+    color: var(--brass-dark);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+}
+
+.type-name { font-family: var(--serif); font-size: 1.15rem; color: var(--ink); }
+.type-meta { font-size: .82rem; color: var(--text-faint); }
+
+/* ---------- Bilet kökü özellikler ---------- */
+.stub-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.6rem; }
+
+.stub-card {
+    position: relative;
+    background: var(--paper);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 2.3rem 2rem;
+    transition: box-shadow .35s var(--ease), transform .35s var(--ease);
+}
+
+.stub-card:hover { box-shadow: var(--shadow); transform: translateY(-4px); }
+
+.stub-num {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--brass-dark);
+    margin-bottom: 1rem;
+}
+
+.stub-card h3 { font-size: 1.3rem; margin-bottom: .6rem; }
+.stub-card p { color: var(--text-soft); font-size: .94rem; }
+
+@@media (max-width: 991.98px) {
+    .hero-inner { grid-template-columns: 1fr; }
+    .hero { padding-bottom: 6rem; }
+    .pass-wrap { max-width: 480px; }
+    .stamp-row, .type-row { grid-template-columns: repeat(2, 1fr); }
+    .stub-row { grid-template-columns: 1fr; }
+}
+
+@@media (max-width: 575.98px) {
+    .stamp-row, .type-row { grid-template-columns: 1fr 1fr; }
+    .guest-row { gap: 1rem; }
+}
+}
+
+<main>
+    <!-- Hero + Arama -->
+    <section class="hero">
+        <svg class="hero-route" viewBox="0 0 1200 500" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M-50 420 C 220 320, 420 480, 650 300 S 1050 120, 1260 200" stroke="#C38A3F" stroke-width="1.4" stroke-dasharray="2 10" fill="none" opacity=".5"/>
+            <circle cx="650" cy="300" r="4" fill="#C38A3F"/>
+            <circle cx="-50" cy="420" r="4" fill="#C38A3F"/>
+            <circle cx="1260" cy="200" r="4" fill="#C38A3F"/>
+        </svg>
+
+        <div class="container hero-inner">
+            <div class="hero-copy">
+                <p class="kicker"><i class="bi bi-compass"></i> Avrupa şehirlerini keşfet</p>
+                <h1 class="hero-title">
+                    <span class="line">Bir sonraki yolculuğun</span>
+                    <span class="line"><em>burada</em> başlıyor.</span>
+                </h1>
+                <p class="hero-text">Milano'dan Barcelona'ya, şehir içi butik otellerden tarihi konaklara — sana uygun odayı birkaç saniyede bul.</p>
+                <div class="hero-stats">
+                    <div class="hero-stat"><strong>2.150+</strong><span>Otel seçeneği</span></div>
+                    <div class="hero-stat"><strong>12</strong><span>Şehir</span></div>
+                    <div class="hero-stat"><strong>8,6</strong><span>Ortalama puan</span></div>
+                </div>
+            </div>
+
+            <div class="pass-wrap">
+                <form class="boarding-pass" asp-controller="Hotel" asp-action="List" method="get" role="search">
+                    <div class="pass-row-top">
+                        <span class="pass-label">STAYFINDER · BİNİŞ KARTI</span>
+                        <span class="pass-route">İstanbul <i class="bi bi-arrow-right"></i> ?</span>
+                    </div>
+
+                    <label class="search-field" for="destination">
+                        <span class="field-icon"><i class="bi bi-geo-alt"></i></span>
+                        <span class="field-body">
+                            <span class="field-label">NEREYE GİDİYORSUN</span>
+                            <input type="text" id="destination" name="destination" class="field-input"
+                                   value="Milano" placeholder="Şehir, bölge veya otel adı" required>
+                        </span>
+                    </label>
+
+                    <div class="pass-perf"></div>
+
+                    <div class="guest-row">
+                        <label class="search-field" for="checkin" style="flex: 1; min-width: 120px;">
+                            <span class="field-icon"><i class="bi bi-calendar3"></i></span>
+                            <span class="field-body">
+                                <span class="field-label">GİRİŞ</span>
+                                <input type="date" id="checkin" name="checkin" class="field-input" value="2026-10-28">
+                            </span>
+                        </label>
+                        <label class="search-field" for="checkout" style="flex: 1; min-width: 120px;">
+                            <span class="field-icon"><i class="bi bi-calendar3"></i></span>
+                            <span class="field-body">
+                                <span class="field-label">ÇIKIŞ</span>
+                                <input type="date" id="checkout" name="checkout" class="field-input" value="2026-10-31">
+                            </span>
+                        </label>
+                        <label class="search-field" for="currency" style="max-width: 110px;">
+                            <span class="field-icon"><i class="bi bi-cash-coin"></i></span>
+                            <span class="field-body">
+                                <span class="field-label">PARA BİRİMİ</span>
+                                <select id="currency" name="currency" class="field-input field-select">
+                                    <option value="EUR" selected>EUR</option>
+                                    <option value="USD">USD</option>
+                                    <option value="TRY">TRY</option>
+                                    <option value="GBP">GBP</option>
+                                </select>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="guest-row">
+                        <div class="counter-field">
+                            <span class="counter-label"><i class="bi bi-person"></i> Yetişkin</span>
+                            <div class="counter" data-min="1" data-max="10">
+                                <button type="button" class="counter-btn" data-action="minus" aria-label="Yetişkin azalt"><i class="bi bi-dash"></i></button>
+                                <input type="text" name="adults" class="counter-value" value="2" readonly aria-label="Yetişkin sayısı">
+                                <button type="button" class="counter-btn" data-action="plus" aria-label="Yetişkin artır"><i class="bi bi-plus"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="counter-field">
+                            <span class="counter-label"><i class="bi bi-emoji-smile"></i> Çocuk</span>
+                            <div class="counter" id="childCounter" data-min="0" data-max="6">
+                                <button type="button" class="counter-btn" data-action="minus" aria-label="Çocuk azalt"><i class="bi bi-dash"></i></button>
+                                <input type="text" name="children" class="counter-value" value="1" readonly aria-label="Çocuk sayısı">
+                                <button type="button" class="counter-btn" data-action="plus" aria-label="Çocuk artır"><i class="bi bi-plus"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="counter-field">
+                            <span class="counter-label"><i class="bi bi-door-closed"></i> Oda</span>
+                            <div class="counter" data-min="1" data-max="5">
+                                <button type="button" class="counter-btn" data-action="minus" aria-label="Oda azalt"><i class="bi bi-dash"></i></button>
+                                <input type="text" name="rooms" class="counter-value" value="1" readonly aria-label="Oda sayısı">
+                                <button type="button" class="counter-btn" data-action="plus" aria-label="Oda artır"><i class="bi bi-plus"></i></button>
+                            </div>
+                        </div>
+
+                        <div id="childAgeWrapper">
+                            <label class="counter-label" for="childAge"><i class="bi bi-balloon"></i> Çocuk Yaşı</label>
+                            <select id="childAge" name="childAges" class="age-select">
+                                <option value="0">0 yaş</option><option value="1">1 yaş</option>
+                                <option value="2" selected>2 yaş</option><option value="3">3 yaş</option>
+                                <option value="4">4 yaş</option><option value="5">5 yaş</option>
+                                <option value="6">6 yaş</option><option value="7">7 yaş</option>
+                                <option value="8">8 yaş</option><option value="9">9 yaş</option>
+                                <option value="10">10 yaş</option><option value="11">11 yaş</option>
+                                <option value="12">12 yaş</option><option value="13">13 yaş</option>
+                                <option value="14">14 yaş</option><option value="15">15 yaş</option>
+                                <option value="16">16 yaş</option><option value="17">17 yaş</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="pass-submit">
+                        <div class="pass-barcode" aria-hidden="true"></div>
+                        <button type="submit" class="btn-brass btn-search"><span>Otelleri Ara</span> <i class="bi bi-search"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popüler Destinasyonlar -->
+    <section class="section">
+        <div class="container">
+            <div class="section-head reveal">
+                <div>
+                    <p class="kicker"><i class="bi bi-stamp"></i> Pasaportuna damga vur</p>
+                    <h2 class="section-title">Popüler Destinasyonları Keşfet</h2>
+                </div>
+                <a href="#" class="section-link">Tüm şehirler <i class="bi bi-arrow-right"></i></a>
+            </div>
+
+            <div class="stamp-row">
+                <a href="#" class="stamp-card">
+                    <div class="stamp-photo">
+                        <img src="https://images.unsplash.com/photo-1513581166391-887a96ddeafd?w=400&q=80&auto=format&fit=crop" alt="Milano Duomo Katedrali">
+                        <span class="stamp-count">1.240+</span>
+                    </div>
+                    <div><h3>Milano</h3><span>İtalya</span></div>
+                </a>
+                <a href="#" class="stamp-card">
+                    <div class="stamp-photo">
+                        <img src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=400&q=80&auto=format&fit=crop" alt="Roma Kolezyum">
+                        <span class="stamp-count">2.180+</span>
+                    </div>
+                    <div><h3>Roma</h3><span>İtalya</span></div>
+                </a>
+                <a href="#" class="stamp-card">
+                    <div class="stamp-photo">
+                        <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&q=80&auto=format&fit=crop" alt="Paris Eyfel Kulesi">
+                        <span class="stamp-count">3.420+</span>
+                    </div>
+                    <div><h3>Paris</h3><span>Fransa</span></div>
+                </a>
+                <a href="#" class="stamp-card">
+                    <div class="stamp-photo">
+                        <img src="https://images.unsplash.com/photo-1583422409516-2895a77efded?w=400&q=80&auto=format&fit=crop" alt="Barcelona Sagrada Familia">
+                        <span class="stamp-count">1.890+</span>
+                    </div>
+                    <div><h3>Barcelona</h3><span>İspanya</span></div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Konaklama Türleri -->
+    <section class="section section-muted">
+        <div class="container">
+            <div class="section-head reveal">
+                <div>
+                    <p class="kicker"><i class="bi bi-door-open"></i> Tarzını seç</p>
+                    <h2 class="section-title">Nasıl bir konaklama arıyorsun?</h2>
+                </div>
+            </div>
+
+            <div class="type-row">
+                <a href="#" class="type-card"><span class="type-icon"><i class="bi bi-building"></i></span><span class="type-name">Oteller</span><span class="type-meta">8.420 seçenek</span></a>
+                <a href="#" class="type-card"><span class="type-icon"><i class="bi bi-house"></i></span><span class="type-name">Daireler</span><span class="type-meta">3.150 seçenek</span></a>
+                <a href="#" class="type-card"><span class="type-icon"><i class="bi bi-sun"></i></span><span class="type-name">Resort</span><span class="type-meta">960 seçenek</span></a>
+                <a href="#" class="type-card"><span class="type-icon"><i class="bi bi-house-door"></i></span><span class="type-name">Tatil Evleri</span><span class="type-meta">2.370 seçenek</span></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Neden StayFinder -->
+    <section class="section">
+        <div class="container">
+            <div class="section-head reveal">
+                <div>
+                    <p class="kicker"><i class="bi bi-ticket-perforated"></i> Neden StayFinder</p>
+                    <h2 class="section-title">Yolculuğun üç biletle başlar</h2>
+                </div>
+            </div>
+
+            <div class="stub-row">
+                <div class="stub-card">
+                    <p class="stub-num">Bilet No. 01</p>
+                    <h3>Binlerce Otel</h3>
+                    <p>Dünyanın farklı şehirlerindeki konaklama seçeneklerini tek yerden keşfet.</p>
+                </div>
+                <div class="stub-card">
+                    <p class="stub-num">Bilet No. 02</p>
+                    <h3>Gerçek Puanlar</h3>
+                    <p>Binlerce misafirin değerlendirmesine göre otelleri kolayca karşılaştır.</p>
+                </div>
+                <div class="stub-card">
+                    <p class="stub-num">Bilet No. 03</p>
+                    <h3>Farklı Para Birimleri</h3>
+                    <p>Fiyatları aklının karışmayacağı, tercih ettiğin para biriminde gör.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+@section Scripts {
+    <script>
+        // Sayaç butonları (yetişkin / çocuk / oda) ve çocuk yaşı alanının gösterimi
+        document.querySelectorAll('.counter').forEach(function (counter) {
+            var input = counter.querySelector('.counter-value');
+            var min = parseInt(counter.dataset.min, 10);
+            var max = parseInt(counter.dataset.max, 10);
+
+            counter.addEventListener('click', function (e) {
+                var btn = e.target.closest('.counter-btn');
+                if (!btn) return;
+                var value = parseInt(input.value, 10);
+                value = btn.dataset.action === 'plus' ? Math.min(value + 1, max) : Math.max(value - 1, min);
+                input.value = value;
+
+                if (counter.id === 'childCounter') {
+                    document.getElementById('childAgeWrapper').classList.toggle('d-none', value === 0);
+                }
+            });
+        });
+
+        // Biniş kartındaki rota etiketini seçilen şehre göre güncelle
+        var destinationInput = document.getElementById('destination');
+        var routeLabel = document.querySelector('.pass-route');
+        if (destinationInput && routeLabel) {
+            var updateRoute = function () {
+                var val = destinationInput.value.trim();
+                routeLabel.innerHTML = 'İstanbul <i class="bi bi-arrow-right"></i> ' + (val || '?');
+            };
+            updateRoute();
+            destinationInput.addEventListener('input', updateRoute);
+        }
+    </script>
+}

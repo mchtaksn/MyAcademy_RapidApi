@@ -1,0 +1,735 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewData["Title"] | StayFinder</title>
+    <meta name="description" content="@(ViewData["Description"] ?? "Dünyanın dört bir yanındaki otelleri karşılaştır, sana en uygun konaklamayı kolayca bul.")">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <style>
+@* =========================================================
+   StayFinder — Tasarım Sistemi
+   Tema: Avrupa şehir otelleri / seyahat keşfi.
+   Motif: biniş kartı (boarding pass) ve pasaport damgası —
+   konu ile organik bağ kuran, jenerik "SaaS kart kiti"
+   kalıbından kaçınan bir görsel dil.
+   ========================================================= *@
+
+:root {
+    /* --- Renk token'ları --- */
+    --ink: #122722;
+    --ink-soft: #1C372F;
+    --ink-line: rgba(251, 249, 245, 0.14);
+    --paper: #FBF9F5;
+    --paper-dim: #F1ECE1;
+    --paper-line: #E4DFD2;
+    --brass: #C38A3F;
+    --brass-dark: #A8732F;
+    --brass-soft: #F3E6CE;
+    --clay: #9C4A35;
+    --clay-soft: #F2DED7;
+    --moss: #3E5C49;
+    --moss-soft: #DCE6DD;
+    --text: #1C2420;
+    --text-soft: #5B655D;
+    --text-faint: #8A9289;
+
+    /* --- Ölçü token'ları --- */
+    --radius-sm: 10px;
+    --radius: 18px;
+    --radius-lg: 30px;
+    --shadow-sm: 0 2px 10px rgba(18, 39, 34, .07);
+    --shadow: 0 18px 44px rgba(18, 39, 34, .14);
+    --shadow-lg: 0 34px 80px rgba(18, 39, 34, .22);
+
+    --serif: "Instrument Serif", Georgia, "Times New Roman", serif;
+    --sans: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+
+    --ease: cubic-bezier(.16, 1, .3, 1);
+}
+
+/* ---------- Sıfırlama / temel ---------- */
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 96px; }
+
+body {
+    margin: 0;
+    font-family: var(--sans);
+    color: var(--text);
+    background: var(--paper);
+    font-size: 1rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+    font-family: var(--serif);
+    color: var(--ink);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    margin: 0;
+}
+
+p { margin: 0; }
+
+a { color: inherit; text-decoration: none; }
+
+img { max-width: 100%; display: block; }
+
+.container { max-width: 1280px; }
+
+:focus-visible {
+    outline: 2.5px solid var(--brass);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+::selection { background: var(--brass-soft); color: var(--ink); }
+
+/* ---------- Ortak eyebrow / küçük başlık ---------- */
+.kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.15rem;
+    color: var(--brass-dark);
+    margin-bottom: .6rem;
+}
+
+.kicker i { font-size: .85rem; }
+
+/* ---------- Butonlar ---------- */
+.btn-brass {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .55rem;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: .95rem;
+    border: 0;
+    border-radius: 999px;
+    padding: .9rem 1.6rem;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .35s var(--ease), box-shadow .35s var(--ease), background-color .35s var(--ease);
+    box-shadow: 0 1px 2px rgba(18, 39, 34, .2);
+}
+
+.btn-brass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--brass);
+    transform: translateY(102%);
+    transition: transform .4s var(--ease);
+    z-index: 0;
+}
+
+.btn-brass span, .btn-brass i { position: relative; z-index: 1; transition: color .35s var(--ease); }
+
+.btn-brass:hover, .btn-brass:focus-visible {
+    color: var(--ink);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.btn-brass:hover::before, .btn-brass:focus-visible::before { transform: translateY(0); }
+
+.btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    background: transparent;
+    color: var(--ink);
+    font-weight: 600;
+    font-size: .95rem;
+    border: 1.5px solid var(--paper-line);
+    border-radius: 999px;
+    padding: .85rem 1.5rem;
+    cursor: pointer;
+    transition: border-color .3s var(--ease), background-color .3s var(--ease), transform .3s var(--ease);
+}
+
+.btn-ghost:hover, .btn-ghost:focus-visible {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    transform: translateY(-1px);
+}
+
+.btn-ghost-light {
+    border-color: var(--ink-line);
+    color: var(--paper);
+}
+
+.btn-ghost-light:hover, .btn-ghost-light:focus-visible {
+    border-color: var(--paper);
+    background: var(--paper);
+    color: var(--ink);
+}
+
+/* ---------- Rozet / stamp ---------- */
+.stamp {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .05rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(251, 249, 245, .55);
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.stamp-brass {
+    background: var(--brass);
+    border-color: rgba(18, 39, 34, .35);
+    color: var(--ink);
+}
+
+.stamp small {
+    font-family: var(--sans);
+    font-size: .54rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+    opacity: .8;
+}
+
+/* ---------- Chip ---------- */
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    font-size: .78rem;
+    font-weight: 600;
+    padding: .35rem .75rem;
+    border-radius: 999px;
+    background: var(--paper-dim);
+    color: var(--text-soft);
+}
+
+.chip-moss { background: var(--moss-soft); color: var(--moss); }
+.chip-clay { background: var(--clay-soft); color: var(--clay); }
+.chip-brass { background: var(--brass-soft); color: var(--brass-dark); }
+
+/* ---------- Perforasyon / bilet ayracı ---------- */
+.perforation {
+    position: relative;
+    height: 1px;
+    background-image: linear-gradient(to right, var(--paper-line) 60%, transparent 0%);
+    background-position: top;
+    background-size: 10px 1px;
+    background-repeat: repeat-x;
+}
+
+.perforation::before, .perforation::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: inherit;
+    transform: translateY(-50%);
+}
+
+/* ---------- Header ---------- */
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(251, 249, 245, .88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid transparent;
+    transition: border-color .4s var(--ease), box-shadow .4s var(--ease);
+}
+
+.site-header.is-scrolled {
+    border-bottom-color: var(--paper-line);
+    box-shadow: 0 10px 30px rgba(18, 39, 34, .06);
+}
+
+.site-header .navbar { padding: 1.1rem 0; }
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .65rem;
+}
+
+.brand-mark {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--ink);
+    border: 1.5px dashed rgba(195, 138, 63, .65);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.brand-mark svg { width: 20px; height: 20px; }
+
+.brand-text {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+}
+
+.brand-text em {
+    font-style: italic;
+    color: var(--brass-dark);
+}
+
+.main-menu { gap: .3rem; }
+
+.main-menu .nav-link {
+    position: relative;
+    color: var(--text-soft);
+    font-weight: 600;
+    font-size: .92rem;
+    padding: .55rem .9rem !important;
+    transition: color .25s var(--ease);
+}
+
+.main-menu .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: .2rem;
+    width: 0;
+    height: 2px;
+    background: var(--brass);
+    transition: width .3s var(--ease), left .3s var(--ease);
+}
+
+.main-menu .nav-link:hover,
+.main-menu .nav-link.is-active {
+    color: var(--ink);
+}
+
+.main-menu .nav-link:hover::after,
+.main-menu .nav-link.is-active::after {
+    left: .9rem;
+    width: calc(100% - 1.8rem);
+}
+
+.nav-actions { display: flex; align-items: center; gap: .6rem; }
+
+.currency-pill {
+    border: 1.5px solid var(--paper-line);
+    background: transparent;
+    color: var(--ink);
+    font-weight: 700;
+    font-size: .82rem;
+    padding: .5rem .95rem;
+    border-radius: 999px;
+    transition: border-color .25s var(--ease);
+}
+
+.currency-pill:hover { border-color: var(--brass); }
+
+.account-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--paper);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    transition: background-color .25s var(--ease);
+}
+
+.account-btn:hover { background: var(--brass-dark); }
+
+.navbar-toggler { border: 0; font-size: 1.5rem; color: var(--ink); padding: .25rem .5rem; box-shadow: none !important; }
+
+/* ---------- Footer ---------- */
+.site-footer {
+    background: var(--ink);
+    color: rgba(251, 249, 245, .68);
+    padding: 4.5rem 0 2rem;
+    margin-top: 6rem;
+}
+
+.site-footer .brand-text { color: var(--paper); }
+
+.footer-tag {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.3rem;
+    color: var(--paper);
+    max-width: 24ch;
+    margin: 1.1rem 0 0;
+    line-height: 1.35;
+}
+
+.footer-col-title {
+    font-weight: 700;
+    font-size: .78rem;
+    color: rgba(251, 249, 245, .45);
+    margin-bottom: 1.1rem;
+}
+
+.footer-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .65rem; }
+
+.footer-links a { font-size: .92rem; transition: color .25s var(--ease); }
+.footer-links a:hover { color: var(--brass); }
+
+.footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 3.5rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--ink-line);
+    font-size: .83rem;
+}
+
+.footer-social { display: flex; gap: .5rem; }
+
+.footer-social a {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--ink-line);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color .25s var(--ease), background-color .25s var(--ease);
+}
+
+.footer-social a:hover { border-color: var(--brass); background: rgba(195, 138, 63, .12); }
+
+/* ---------- Durum mesajları (hata / boş) ---------- */
+.state-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.1rem;
+    padding: 4.5rem 2rem;
+    background: var(--paper-dim);
+    border-radius: var(--radius-lg);
+}
+
+.state-panel svg { width: 76px; height: 76px; color: var(--brass-dark); }
+
+.state-panel h3 { font-size: 1.5rem; }
+
+.state-panel p { color: var(--text-soft); max-width: 42ch; }
+
+/* ---------- Yükleniyor katmanı (arama gönderildiğinde) ---------- */
+.load-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(18, 39, 34, .94);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .35s var(--ease);
+}
+
+.load-overlay.is-active { opacity: 1; pointer-events: all; }
+
+.load-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.1rem;
+    color: var(--paper);
+    transform: translateY(8px);
+    transition: transform .4s var(--ease);
+}
+
+.load-overlay.is-active .load-box { transform: translateY(0); }
+
+.load-compass {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(195, 138, 63, .6);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    animation: loadSpin 1.4s linear infinite;
+}
+
+.load-compass svg { width: 24px; height: 24px; }
+
+@@keyframes loadSpin { to { transform: rotate(360deg); } }
+
+.load-text { font-family: var(--serif); font-style: italic; font-size: 1.25rem; }
+
+/* ---------- Arama butonu yüklenme durumu ---------- */
+.is-submitting { opacity: .75; pointer-events: none; }
+
+/* ---------- Favori butonu (tüm sayfalarda ortak) ---------- */
+.fav-btn {
+    border: 0;
+    background: rgba(251, 249, 245, .92);
+    color: var(--ink);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    box-shadow: var(--shadow-sm);
+    transition: color .2s var(--ease);
+}
+
+.fav-btn.is-active { color: var(--clay); }
+
+.fav-btn.pop { animation: favPop .45s var(--ease); }
+
+@@keyframes favPop {
+    0% { transform: scale(1); }
+    35% { transform: scale(1.35); }
+    60% { transform: scale(.9); }
+    100% { transform: scale(1); }
+}
+
+/* ---------- Scroll reveal yardımcı sınıfı ---------- */
+.reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity .8s var(--ease), transform .8s var(--ease);
+}
+
+.reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+@@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    * { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+/* ---------- Mobil ---------- */
+@@media (max-width: 991.98px) {
+    .navbar-collapse {
+        background: var(--paper);
+        border: 1px solid var(--paper-line);
+        border-radius: var(--radius);
+        padding: 1.1rem;
+        margin-top: .85rem;
+        box-shadow: var(--shadow);
+    }
+
+    .main-menu .nav-link::after { display: none; }
+    .main-menu .nav-link.is-active { color: var(--brass-dark); }
+
+    .nav-actions {
+        margin-top: .85rem;
+        padding-top: .85rem;
+        border-top: 1px solid var(--paper-line);
+    }
+
+    .footer-bottom { flex-direction: column; align-items: flex-start; }
+}
+
+@RenderSection("Styles", required: false)
+    </style>
+</head>
+<body>
+
+    <div class="load-overlay" id="loadOverlay" aria-hidden="true">
+        <div class="load-box">
+            <span class="load-compass">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L13.8 9.2L21 11L13.8 12.8L12 20L10.2 12.8L3 11L10.2 9.2L12 2Z" stroke="#C38A3F" stroke-width="1.3" stroke-linejoin="round"/>
+                </svg>
+            </span>
+            <span class="load-text">Oteller aranıyor…</span>
+        </div>
+    </div>
+
+    <header class="site-header" id="siteHeader">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand brand" asp-controller="Home" asp-action="Index">
+                    <span class="brand-mark">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L13.8 9.2L21 11L13.8 12.8L12 20L10.2 12.8L3 11L10.2 9.2L12 2Z" stroke="#C38A3F" stroke-width="1.3" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    <span class="brand-text">Stay<em>Finder</em></span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                        aria-controls="mainNav" aria-expanded="false" aria-label="Menüyü aç">
+                    <i class="bi bi-list"></i>
+                </button>
+
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav ms-auto me-lg-4 main-menu">
+                        <li class="nav-item"><a class="nav-link @(ViewData["ActiveNav"]?.ToString() == "home" ? "is-active" : "")" asp-controller="Home" asp-action="Index">Ana Sayfa</a></li>
+                        <li class="nav-item"><a class="nav-link @(ViewData["ActiveNav"]?.ToString() == "hotels" ? "is-active" : "")" asp-controller="Hotel" asp-action="List">Oteller</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Popüler Şehirler</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Hakkımızda</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">İletişim</a></li>
+                    </ul>
+
+                    <div class="nav-actions">
+                        <button type="button" class="currency-pill" aria-label="Para birimi: Euro">EUR</button>
+                        <a href="#" class="account-btn" aria-label="Hesabım"><i class="bi bi-person"></i></a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    @RenderBody()
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row g-4 g-lg-5">
+                <div class="col-12 col-lg-4">
+                    <a class="brand footer-brand" asp-controller="Home" asp-action="Index">
+                        <span class="brand-mark">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2L13.8 9.2L21 11L13.8 12.8L12 20L10.2 12.8L3 11L10.2 9.2L12 2Z" stroke="#C38A3F" stroke-width="1.3" stroke-linejoin="round"/>
+                            </svg>
+                        </span>
+                        <span class="brand-text">Stay<em>Finder</em></span>
+                    </a>
+                    <p class="footer-tag">Her şehrin bir sonraki adresini keşfet.</p>
+                </div>
+                <div class="col-6 col-lg-2 offset-lg-2">
+                    <p class="footer-col-title">KEŞFET</p>
+                    <ul class="footer-links">
+                        <li><a asp-controller="Home" asp-action="Index">Ana Sayfa</a></li>
+                        <li><a asp-controller="Hotel" asp-action="List">Oteller</a></li>
+                        <li><a href="#">Popüler Şehirler</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <p class="footer-col-title">KURUMSAL</p>
+                    <ul class="footer-links">
+                        <li><a href="#">Hakkımızda</a></li>
+                        <li><a href="#">İletişim</a></li>
+                        <li><a href="#">Gizlilik</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <p class="footer-col-title">TAKİP ET</p>
+                    <div class="footer-social">
+                        <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" aria-label="X"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <span>© 2026 StayFinder. Tüm hakları saklıdır.</span>
+                <span>Milano · Roma · Paris · Barcelona</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Header: kaydırınca ince gölge/çizgi
+        (function () {
+            var header = document.getElementById('siteHeader');
+            var onScroll = function () {
+                header.classList.toggle('is-scrolled', window.scrollY > 8);
+            };
+            onScroll();
+            window.addEventListener('scroll', onScroll, { passive: true });
+        })();
+
+        // Paylaşılan scroll-reveal: .reveal sınıfı olan her eleman görünür
+        // olduğunda tek seferlik "is-visible" sınıfı alır.
+        (function () {
+            if (!('IntersectionObserver' in window)) {
+                document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('is-visible'); });
+                return;
+            }
+            var observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+            document.querySelectorAll('.reveal').forEach(function (el) { observer.observe(el); });
+        })();
+
+        // Arama formları (ana sayfa + otel listesi) gönderildiğinde:
+        // buton "Aranıyor…" durumuna geçer ve tam ekran yükleniyor katmanı açılır.
+        // Form gerçek bir GET navigasyonu yaptığı için katman, yeni sayfa
+        // gelene kadar (ya da tarayıcı "geri" ile dönene kadar) açık kalır.
+        (function () {
+            var overlay = document.getElementById('loadOverlay');
+            document.querySelectorAll('form[role="search"]').forEach(function (form) {
+                form.addEventListener('submit', function (e) {
+                    if (!form.checkValidity()) return; // zorunlu alan boşsa tarayıcı zaten engeller
+                    var btn = form.querySelector('button[type="submit"]');
+                    if (btn) {
+                        btn.classList.add('is-submitting');
+                        var label = btn.querySelector('span');
+                        if (label) label.textContent = 'Aranıyor…';
+                    }
+                    if (overlay) overlay.classList.add('is-active');
+                });
+            });
+
+            // Tarayıcı geçmişten (bfcache) geri dönülürse katman takılı kalmasın.
+            window.addEventListener('pageshow', function () {
+                if (overlay) overlay.classList.remove('is-active');
+            });
+        })();
+
+        // Favori kalp butonu: aç/kapa + hafif "pop" animasyonu (tüm sayfalarda ortak)
+        document.addEventListener('click', function (e) {
+            var btn = e.target.closest('.fav-btn');
+            if (!btn) return;
+            var active = btn.classList.toggle('is-active');
+            var icon = btn.querySelector('i');
+            if (icon) icon.className = active ? 'bi bi-heart-fill' : 'bi bi-heart';
+            btn.setAttribute('aria-label', active ? 'Favorilerden çıkar' : 'Favorilere ekle');
+            btn.classList.remove('pop');
+            void btn.offsetWidth;
+            btn.classList.add('pop');
+        });
+    </script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
